@@ -22,6 +22,10 @@
 		E4C55E612986C3FA002DD3F3 /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C55E602986C3FA002DD3F3 /* AuthViewModel.swift */; };
 		E4C55E632986C4BE002DD3F3 /* CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C55E622986C4BE002DD3F3 /* CoreData.swift */; };
 		E4C55E652986C523002DD3F3 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C55E642986C523002DD3F3 /* MainView.swift */; };
+		E4C55E672986D0BF002DD3F3 /* UserRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C55E662986D0BF002DD3F3 /* UserRepository.swift */; };
+		E4C55E692986D145002DD3F3 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C55E682986D145002DD3F3 /* User.swift */; };
+		E4C55E6B298799AB002DD3F3 /* QuestionRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C55E6A298799AB002DD3F3 /* QuestionRepository.swift */; };
+		E4C55E6D298799C2002DD3F3 /* Question.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C55E6C298799C2002DD3F3 /* Question.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,6 +41,10 @@
 		E4C55E602986C3FA002DD3F3 /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
 		E4C55E622986C4BE002DD3F3 /* CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreData.swift; sourceTree = "<group>"; };
 		E4C55E642986C523002DD3F3 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		E4C55E662986D0BF002DD3F3 /* UserRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserRepository.swift; sourceTree = "<group>"; };
+		E4C55E682986D145002DD3F3 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		E4C55E6A298799AB002DD3F3 /* QuestionRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionRepository.swift; sourceTree = "<group>"; };
+		E4C55E6C298799C2002DD3F3 /* Question.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Question.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,6 +92,10 @@
 				E4C55E602986C3FA002DD3F3 /* AuthViewModel.swift */,
 				E4C55E622986C4BE002DD3F3 /* CoreData.swift */,
 				E4C55E642986C523002DD3F3 /* MainView.swift */,
+				E4C55E662986D0BF002DD3F3 /* UserRepository.swift */,
+				E4C55E682986D145002DD3F3 /* User.swift */,
+				E4C55E6A298799AB002DD3F3 /* QuestionRepository.swift */,
+				E4C55E6C298799C2002DD3F3 /* Question.swift */,
 			);
 			path = yayornay;
 			sourceTree = "<group>";
@@ -181,8 +193,12 @@
 				E47F6DCD2986B0E0004EA25E /* yayornay.xcdatamodeld in Sources */,
 				E4C55E612986C3FA002DD3F3 /* AuthViewModel.swift in Sources */,
 				E47F6DC32986B0DF004EA25E /* ContentView.swift in Sources */,
+				E4C55E6B298799AB002DD3F3 /* QuestionRepository.swift in Sources */,
 				E4C55E632986C4BE002DD3F3 /* CoreData.swift in Sources */,
 				E4C55E5F2986C096002DD3F3 /* LoginView.swift in Sources */,
+				E4C55E672986D0BF002DD3F3 /* UserRepository.swift in Sources */,
+				E4C55E6D298799C2002DD3F3 /* Question.swift in Sources */,
+				E4C55E692986D145002DD3F3 /* User.swift in Sources */,
 				E47F6DC12986B0DF004EA25E /* yayornayApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

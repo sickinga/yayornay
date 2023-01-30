@@ -9,7 +9,8 @@ import SwiftUI
 import FirebaseAuth
 
 final class AuthViewModel: ObservableObject {
-    @Published var user: User? {
+    @Published var userRepository = UserRepository()
+    var user: User? {
         didSet {
             objectWillChange.send()
         }
@@ -36,12 +37,22 @@ final class AuthViewModel: ObservableObject {
     
     func signUp(
         emailAddress: String,
-        password: String
+        password: String,
+        name: String
     ) {
         Auth.auth().createUser(withEmail: emailAddress, password: password) { result, error in
             if let error = error {
                 print("an error occured: \(error.localizedDescription)")
                 return
+            }
+            
+            let changeRequest = result?.user.createProfileChangeRequest()
+            changeRequest?.displayName = name
+            changeRequest?.commitChanges() { error in
+                if let error = error {
+                    print("an error occured: \(error.localizedDescription)")
+                    return
+                }
             }
         }
     }

@@ -13,6 +13,7 @@ struct LoginView: View {
     @State private var isLogin = false
     @State var email = ""
     @State var password = ""
+    @State var name = ""
     
     var body: some View {
         NavigationView {
@@ -33,6 +34,12 @@ struct LoginView: View {
                 SecureField("Password", text: $password)
                     .textFieldStyle(.roundedBorder)
                     .frame(width: 280, height: 45, alignment: .center)
+                if !isLogin {
+                    TextField("Name", text: $name)
+                        .disableAutocorrection(true)
+                        .textFieldStyle(.roundedBorder)
+                        .frame(width: 280, height: 45, alignment: .center)
+                }
                 Button(action: {
                     if isLogin {
                         loginUser()
@@ -55,7 +62,7 @@ struct LoginView: View {
     }
     
     private func createUser() {
-        authModel.signUp(emailAddress: email, password: password)
+        authModel.signUp(emailAddress: email, password: password, name: name)
     }
 }
 
@@ -63,5 +70,6 @@ struct LoginView: View {
 struct LoginView_Previews: PreviewProvider {
     static var previews: some View {
         LoginView()
+            .environmentObject(AuthViewModel())
     }
 }
