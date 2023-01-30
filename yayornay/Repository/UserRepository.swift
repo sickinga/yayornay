@@ -12,6 +12,7 @@ import FirebaseFirestoreSwift
 final class UserRepository: ObservableObject {
     @Published var friends: [NamedUser] = []
     @Published var friendRequests: [FriendRequest] = []
+    @Published var filteredUsers: [NamedUser] = []
     private let userCollection = Firestore.firestore().collection("user")
     private let friendRequestCollection = Firestore.firestore().collection("friendRequest")
     private let friendsPath = "friends"
@@ -24,6 +25,19 @@ final class UserRepository: ObservableObject {
         } catch {
             fatalError("Unable to add user: \(error.localizedDescription).")
         }
+    }
+    
+    func search(_ searchString: String) {
+        userCollection.whereField("keywordsForLookup", arrayContains: searchString)
+            .getDocuments { querySnapshot, error in
+                guard let documents = querySnapshot?.documents, error == nil else {
+                    print("No documents")
+                    return
+                }
+                self.filteredUsers = documents.compactMap { queryDocumentSnapshot in
+                    try? queryDocumentSnapshot.data(as: NamedUser.self)
+                }
+            }
     }
     
     func addFriend(userId: String, friend: NamedUser) {

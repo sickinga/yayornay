@@ -26,6 +26,7 @@ struct FriendsView: View {
                     .tag(false)
             }.pickerStyle(SegmentedPickerStyle())
                 .padding()
+                .onChange(of: isFriendView, perform: { newValue in searchString = ""})
             if isFriendView {
                 List {
                     ForEach(friends) { friend in
@@ -35,56 +36,74 @@ struct FriendsView: View {
                     userRepository.addFriendListener(userId: authModel.user!.uid)
                 }.onDisappear {
                     userRepository.removeFriendsListener()
-                }.searchable(text: $searchString)
-                .onChange(of: searchString, perform: { newValue in
+                }
+            } else {
+                if searchString.isEmpty {
+                    List {
+                        ForEach(userRepository.friendRequests) { request in
+                            HStack {
+                                Text(request.fromName)
+                                Spacer()
+                                Button("ADD") {
+                                    userRepository.answerFriendRequest(friendRequest: request, accept: true)
+                                }
+                                Button("DENY") {
+                                    userRepository.answerFriendRequest(friendRequest: request, accept: false)
+                                }
+                            }.swipeActions {
+                                Button {
+                                    userRepository.answerFriendRequest(friendRequest: request, accept: true)
+                                } label: {
+                                    Label("ADD", systemImage: "checkmark.circle.fill")
+                                }.tint(Color.green)
+                                Button {
+                                    userRepository.answerFriendRequest(friendRequest: request, accept: false)
+                                } label: {
+                                    Label("DENY", systemImage: "minus.circle.fill")
+                                }
+                                .tint(Color.red)
+                            }
+                        }
+                    }.onAppear {
+                        print("TEST")
+                        userRepository.addFriendRequestListener(userId: authModel.user!.uid)
+                    }.onDisappear {
+                        userRepository
+                            .removeFriendRequestListener()
+                    }
+                } else {
+                    List {
+                        ForEach(userRepository.filteredUsers) { user in
+                            HStack {
+                                Text(user.name)
+                                Spacer()
+                                Button("ADD") {
+                                    userRepository.sendFriendRequest(FriendRequest(from: NamedUser(user: authModel.user!), to: user))
+                                }.swipeActions {
+                                    Button {
+                                        userRepository.sendFriendRequest(FriendRequest(from: NamedUser(user: authModel.user!), to: user))
+                                    } label: {
+                                        Label("ADD", systemImage: "checkmark.circle.fill")
+                                    }.tint(Color.green)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }.searchable(text: $searchString)
+            .onChange(of: searchString, perform: { newValue in
+                if isFriendView {
                     if newValue.isEmpty {
                         filteredFriends = []
                     } else {
                         filteredFriends = userRepository.friends.filter { $0.name.lowercased().contains(searchString.lowercased())
                         }
                     }
-                })
-            } else {
-                List {
-                    ForEach(userRepository.friendRequests) { request in
-                        HStack {
-                            Text(request.fromName)
-                            Spacer()
-                            Button("ADD") {
-                                userRepository.answerFriendRequest(friendRequest: request, accept: true)
-                            }
-                            Button("DENY") {
-                                userRepository.answerFriendRequest(friendRequest: request, accept: false)
-                            }
-                        }.swipeActions {
-                            Button {
-                                userRepository.answerFriendRequest(friendRequest: request, accept: true)
-                            } label: {
-                                Label("ADD", systemImage: "checkmark.circle.fill")
-                            }.tint(Color.green)
-                            Button {
-                                userRepository.answerFriendRequest(friendRequest: request, accept: false)
-                            } label: {
-                                Label("DENY", systemImage: "minus.circle.fill")
-                            }
-                            .tint(Color.red) }                    }
-                }.onAppear {
-                    userRepository.addFriendRequestListener(userId: authModel.user!.uid)
-                }.onDisappear { userRepository.removeFriendRequestListener() }
-            }
-        }.toolbar {
-            ToolbarItemGroup(placement: .primaryAction) {
-                Button(
-                    action: {
-                        authModel.signOut()
-                    },
-                    label: {
-                        Text("Sign Out")
-                            .bold()
-                    }
-                )
-            }
-        }
+                } else {
+                    userRepository.search(searchString)
+                }
+            })
     }
 }
 
