@@ -85,6 +85,7 @@
 		E47F6DBF2986B0DF004EA25E /* yayornay */ = {
 			isa = PBXGroup;
 			children = (
+				E4C55E762987E847002DD3F3 /* ViewModel */,
 				E4C55E752987E7C1002DD3F3 /* Repository */,
 				E4C55E742987E7AC002DD3F3 /* Model */,
 				E47F6DC02986B0DF004EA25E /* yayornayApp.swift */,
@@ -93,12 +94,11 @@
 				E4C55E642986C523002DD3F3 /* MainView.swift */,
 				E4C55E6E2987B40E002DD3F3 /* FriendsView.swift */,
 				E47F6DC42986B0E0004EA25E /* Assets.xcassets */,
-				E47F6DC92986B0E0004EA25E /* Persistence.swift */,
 				E47F6DCB2986B0E0004EA25E /* yayornay.xcdatamodeld */,
 				E47F6DD32986B1E9004EA25E /* GoogleService-Info.plist */,
 				E47F6DC62986B0E0004EA25E /* Preview Content */,
-				E4C55E602986C3FA002DD3F3 /* AuthViewModel.swift */,
 				E4C55E622986C4BE002DD3F3 /* CoreData.swift */,
+				E47F6DC92986B0E0004EA25E /* Persistence.swift */,
 			);
 			path = yayornay;
 			sourceTree = "<group>";
@@ -128,6 +128,14 @@
 				E4C55E662986D0BF002DD3F3 /* UserRepository.swift */,
 			);
 			path = Repository;
+			sourceTree = "<group>";
+		};
+		E4C55E762987E847002DD3F3 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				E4C55E602986C3FA002DD3F3 /* AuthViewModel.swift */,
+			);
+			path = ViewModel;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

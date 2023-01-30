@@ -7,7 +7,24 @@
 
 import Foundation
 
-struct FriendRequest: Encodable {
-    let from: NamedUser
-    var to: NamedUser
+struct FriendRequest: Codable, Identifiable {
+    var id: String { from + to }
+    let from: String
+    let fromName: String
+    let to: String
+    let toName: String
+    
+    init(from: String, fromName: String, to: String, toName: String) {
+        self.from = from
+        self.fromName = fromName
+        self.to = to
+        self.toName = toName
+    }
+    
+    init(from: NamedUser, to: NamedUser) {
+        self.from = from.id
+        self.fromName = from.name
+        self.to = to.id
+        self.toName = to.name
+    }
 }
