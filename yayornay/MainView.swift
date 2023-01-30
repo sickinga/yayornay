@@ -9,8 +9,8 @@ import SwiftUI
 
 struct MainView: View {
     @EnvironmentObject private var authModel: AuthViewModel
-    @State var questionText: String = ""
     @StateObject var questionRepository: QuestionRepository = QuestionRepository()
+    @State var questionText: String = ""
     
     var body: some View {
         VStack {
@@ -47,6 +47,11 @@ struct MainView: View {
                             .bold()
                     }
                 )
+            }
+            ToolbarItemGroup(placement: .primaryAction) {
+                NavigationLink(destination: FriendsView().environmentObject(authModel)) {
+                    Label("", systemImage: "person.circle.fill")
+                }
             }
         }
     }

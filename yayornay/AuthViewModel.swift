@@ -9,7 +9,7 @@ import SwiftUI
 import FirebaseAuth
 
 final class AuthViewModel: ObservableObject {
-    @Published var userRepository = UserRepository()
+    var userRepository = UserRepository()
     var user: User? {
         didSet {
             objectWillChange.send()
@@ -45,6 +45,8 @@ final class AuthViewModel: ObservableObject {
                 print("an error occured: \(error.localizedDescription)")
                 return
             }
+            
+            self.userRepository.add(NamedUser(id: result?.user.uid ?? "", name: name))
             
             let changeRequest = result?.user.createProfileChangeRequest()
             changeRequest?.displayName = name

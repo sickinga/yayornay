@@ -15,7 +15,7 @@ final class QuestionRepository: ObservableObject {
     private var listener: ListenerRegistration?
     
     func addQuestionsListener(userId: String) {
-        listener = collection.whereField("createdBy", isEqualTo: userId)
+        self.listener = collection.whereField("createdBy", isEqualTo: userId)
             .addSnapshotListener { (querySnapshot, error) in
                 if let error = error {
                     print("Error getting documents: \(error)")
@@ -23,13 +23,12 @@ final class QuestionRepository: ObservableObject {
                     self.questions = querySnapshot?.documents.compactMap { document in
                         try? document.data(as: Question.self)
                     } ?? []
-                    print(self.questions)
                 }
             }
     }
     
     func removeQuestionsListener() {
-        listener?.remove()
+        self.listener?.remove()
     }
     
     func add(_ question: Question) {
