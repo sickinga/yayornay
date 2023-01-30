@@ -12,11 +12,21 @@ struct Question: Identifiable, Encodable, Decodable {
     let created: Date
     var text: String
     var createdBy: String
+    var sentTo: [String]
     
-    init(id: UUID, text: String, createdBy: String, created: Date) {
+    init(id: UUID, created: Date, text: String, createdBy: String, sentTo: [String]?) {
         self.id = id
+        self.created = created
         self.text = text
         self.createdBy = createdBy
-        self.created = created
+        self.sentTo = sentTo ?? []
+    }
+    
+    init(question: Question, sentTo: [String]) {
+        self.id = question.id
+        self.created = question.created
+        self.text = question.text
+        self.createdBy = question.createdBy
+        self.sentTo = sentTo
     }
 }

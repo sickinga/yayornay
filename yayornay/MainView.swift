@@ -32,7 +32,7 @@ struct MainView: View {
                 .textFieldStyle(.roundedBorder)
                 .frame(width: 280, height: 45, alignment: .center)
             Button("Send!") {
-                let question = Question(id: UUID(), text: questionText, createdBy: authModel.user!.uid, created: Date.now)
+                let question = Question(id: UUID(), created: Date.now, text: questionText, createdBy: authModel.user!.uid, sentTo: [])
                 questionRepository.add(question)
                 questionText = ""
             }
