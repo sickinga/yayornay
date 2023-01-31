@@ -9,16 +9,17 @@ import Foundation
 import FirebaseFirestore
 import FirebaseFirestoreSwift
 
-final class QuestionRepository: ObservableObject {
+class QuestionRepository: ObservableObject {
     @Published var userQuestions: [Question] = []
     @Published var askedQuestions: [Question] = []
-    var questions: [Question] {
-        [userQuestions + askedQuestions].flatMap { $0 }
-    }
     private let collection = Firestore.firestore().collection("question")
     private var userQuestionListener: ListenerRegistration?
     private var askedQuestionListener: ListenerRegistration?
     private var userId: String?
+    @Published var questions: [Question] = []
+//    {
+//        [questionRepository.userQuestions + questionRepository.askedQuestions].flatMap { $0 }
+//    }
     
     func addQuestionsListener(userId: String) {
         self.userQuestionListener = collection.whereField("createdBy", isEqualTo: userId)
@@ -29,6 +30,7 @@ final class QuestionRepository: ObservableObject {
                     self.userQuestions = querySnapshot?.documents.compactMap { document in
                         return try? document.data(as: Question.self)
                     } ?? []
+                    self.questions = [self.userQuestions + self.askedQuestions].flatMap { $0 }
                 }
             }
         self.askedQuestionListener = collection.whereField("sentTo", arrayContains: userId)
@@ -39,6 +41,7 @@ final class QuestionRepository: ObservableObject {
                     self.askedQuestions = querySnapshot?.documents.compactMap { document in
                         return try? document.data(as: Question.self)
                     } ?? []
+                    self.questions = [self.userQuestions + self.askedQuestions].flatMap { $0 }
                 }
             }
     }

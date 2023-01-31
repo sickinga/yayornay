@@ -29,6 +29,7 @@
 		E4C55E6D298799C2002DD3F3 /* Question.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C55E6C298799C2002DD3F3 /* Question.swift */; };
 		E4C55E6F2987B40E002DD3F3 /* FriendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C55E6E2987B40E002DD3F3 /* FriendsView.swift */; };
 		E4C55E732987E239002DD3F3 /* FriendRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C55E722987E239002DD3F3 /* FriendRequest.swift */; };
+		E4F6490F2989A34B00917780 /* MainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4F6490E2989A34B00917780 /* MainViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -51,6 +52,7 @@
 		E4C55E6C298799C2002DD3F3 /* Question.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Question.swift; sourceTree = "<group>"; };
 		E4C55E6E2987B40E002DD3F3 /* FriendsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendsView.swift; sourceTree = "<group>"; };
 		E4C55E722987E239002DD3F3 /* FriendRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendRequest.swift; sourceTree = "<group>"; };
+		E4F6490E2989A34B00917780 /* MainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -137,6 +139,7 @@
 			isa = PBXGroup;
 			children = (
 				E4C55E602986C3FA002DD3F3 /* AuthViewModel.swift */,
+				E4F6490E2989A34B00917780 /* MainViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -236,6 +239,7 @@
 				E4C55E692986D145002DD3F3 /* User.swift in Sources */,
 				E47F6DC12986B0DF004EA25E /* yayornayApp.swift in Sources */,
 				E4C55E6F2987B40E002DD3F3 /* FriendsView.swift in Sources */,
+				E4F6490F2989A34B00917780 /* MainViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

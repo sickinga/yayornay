@@ -12,75 +12,81 @@ struct MainView: View {
     @EnvironmentObject private var authModel: AuthViewModel
     @ObservedObject var questionRepository: QuestionRepository = QuestionRepository()
     @State var questionText: String = ""
-    @State var selectedQuestion: Question?
+    @ObservedObject var vm = MainViewModel()
     @State var showAnswerView = false
     
+    
     var body: some View {
-        VStack {
-            Text("Yay or Nay")
-                .font(.largeTitle)
-            
-            TextField("Ask something", text: $questionText)
-                .disableAutocorrection(true)
-                .textFieldStyle(.roundedBorder)
-                .frame(width: 280, height: 45, alignment: .center)
-            Button("Send!") {
-                let question = Question(id: UUID(), created: Date.now, text: questionText, createdBy: authModel.user!.uid, answers: [], sentTo: [])
-                questionRepository.add(question)
-                questionText = ""
-            }
-            
-            if !questionRepository.questions.isEmpty {
-                Text("History")
-                    .font(.title2)
-                    .padding()
+        NavigationView {
+            VStack {
+                Text("Yay or Nay")
+                    .font(.largeTitle)
                 
-                List {
-                    ForEach(questionRepository.questions) { question in
-                        Button(action: {
-                            self.selectedQuestion = question
-                            self.showAnswerView = true
-                        }, label: {
-                            Label {
-                                Text(question.text)
-                                Spacer()
-                            } icon: {
-                                if isNewQuestion(question) {
-                                    Circle()
-                                        .fill(.blue)
-                                        .frame(width: 12, height: 12)
+                TextField("Ask something", text: $questionText)
+                    .disableAutocorrection(true)
+                    .textFieldStyle(.roundedBorder)
+                    .frame(width: 280, height: 45, alignment: .center)
+                Button("Send!") {
+                    let question = Question(id: UUID(), created: Date.now, text: questionText, createdBy: authModel.user!.uid, answers: [], sentTo: [])
+                    questionRepository.add(question)
+                    questionText = ""
+                }
+                
+                if !questionRepository.questions.isEmpty {
+                    Text("History")
+                        .font(.title2)
+                        .padding()
+                    
+                    List {
+                        ForEach(questionRepository.questions) { question in
+                            Button(action: {
+                                vm.selectedQuestion = question
+                                self.showAnswerView = true
+                            }, label: {
+                                Label {
+                                    Text(question.text)
+                                    Spacer()
+                                } icon: {
+                                    if isNewQuestion(question) {
+                                        Circle()
+                                            .fill(.blue)
+                                            .frame(width: 12, height: 12)
+                                    }
                                 }
-                            }
+                            })
+                        }
+                    }.sheet(
+                        isPresented: $showAnswerView,
+                        content: {
+                            AnswerView(
+                                questionRepository: questionRepository,
+                                isPresented: $showAnswerView,
+                                user: authModel.user!,
+                                question: vm.selectedQuestion
+                            )
+                            .presentationDetents([.medium, .large])
                         })
+                    
+                }
+            }.toolbar {
+                ToolbarItemGroup(placement: .primaryAction) {
+                    NavigationLink(destination: AccountView().environmentObject(authModel)) {
+                        Label("", systemImage: "person.fill")
                     }
-                }.sheet(
-                    isPresented: $showAnswerView,
-                    content: {
-                        AnswerView(
-                            isPresented: $showAnswerView,
-                            user: authModel.user!,
-                            question: selectedQuestion
-                        )
-                    })
-            }
-        }.toolbar {
-            ToolbarItemGroup(placement: .primaryAction) {
-                NavigationLink(destination: AccountView().environmentObject(authModel)) {
-                    Label("", systemImage: "person.fill")
                 }
-            }
-            ToolbarItemGroup(placement: .navigationBarLeading) {
-                NavigationLink(destination: FriendsView().environmentObject(authModel)) {
-                    Label("", systemImage: "person.2.fill")
+                ToolbarItemGroup(placement: .navigationBarLeading) {
+                    NavigationLink(destination: FriendsView().environmentObject(authModel)) {
+                        Label("", systemImage: "person.2.fill")
+                    }
                 }
+            }.onAppear {
+                questionRepository.addQuestionsListener(userId: authModel.user!.uid)
+            }.onDisappear {
+                questionRepository.removeQuestionsListener()
+            }.refreshable {
+                questionRepository.removeQuestionsListener()
+                questionRepository.addQuestionsListener(userId: authModel.user!.uid)
             }
-        }.onAppear {
-            questionRepository.addQuestionsListener(userId: authModel.user!.uid)
-        }.onDisappear {
-            questionRepository.removeQuestionsListener()
-        }.refreshable {
-            questionRepository.removeQuestionsListener()
-            questionRepository.addQuestionsListener(userId: authModel.user!.uid)
         }
     }
     
@@ -97,7 +103,7 @@ struct MainView_Previews: PreviewProvider {
 }
 
 struct AnswerView: View {
-    @StateObject var questionRepository: QuestionRepository = QuestionRepository()
+    var questionRepository: QuestionRepository
     @Binding var isPresented: Bool
     let user: User
     let question: Question?

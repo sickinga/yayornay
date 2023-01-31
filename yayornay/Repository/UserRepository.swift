@@ -38,6 +38,11 @@ final class UserRepository: ObservableObject {
                 }
                 self.filteredUsers = documents.compactMap { queryDocumentSnapshot in
                     try? queryDocumentSnapshot.data(as: NamedUser.self)
+                }.filter { user in
+                    self.friends.contains { friend in
+                        friend.id == user.id
+                    }
+                    
                 }
             }
     }

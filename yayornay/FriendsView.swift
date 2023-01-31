@@ -27,19 +27,23 @@ struct FriendsView: View {
             }.pickerStyle(SegmentedPickerStyle())
                 .padding()
                 .onChange(of: isFriendView, perform: { newValue in searchString = ""})
-            if isFriendView {
-                List {
-                    ForEach(friends) { friend in
-                        Text(friend.name)
+            List {
+                if !friends.isEmpty && (!searchString.isEmpty || isFriendView) {
+                    Section("My Friends (\(friends.count))") {
+                        ForEach(friends) { friend in
+                            Text(friend.name)
+                        }
                     }
-                }.onAppear {
-                    userRepository.addFriendListener(userId: authModel.user!.uid)
-                }.onDisappear {
-                    userRepository.removeFriendsListener()
                 }
-            } else {
-                if searchString.isEmpty {
-                    List {
+                if friends.isEmpty && searchString.isEmpty && isFriendView {
+                    HStack {
+                        Spacer()
+                        Text("Find your friends first...")
+                        Spacer()
+                    }
+                }
+                if !userRepository.friendRequests.isEmpty && (!searchString.isEmpty || !isFriendView){
+                    Section("Friend Requests") {
                         ForEach(userRepository.friendRequests) { request in
                             HStack {
                                 Text(request.fromName)
@@ -64,14 +68,17 @@ struct FriendsView: View {
                                 .tint(Color.red)
                             }
                         }
-                    }.onAppear {
-                        userRepository.addFriendRequestListener(userId: authModel.user!.uid)
-                    }.onDisappear {
-                        userRepository
-                            .removeFriendRequestListener()
                     }
-                } else {
-                    List {
+                }
+                if userRepository.friendRequests.isEmpty && searchString.isEmpty && !isFriendView {
+                    HStack {
+                        Spacer()
+                        Text("No pending requests")
+                        Spacer()
+                    }
+                }
+                if !searchString.isEmpty && !userRepository.filteredUsers.isEmpty {
+                    Section("More Results") {
                         ForEach(userRepository.filteredUsers) { user in
                             HStack {
                                 Text(user.name)
@@ -89,20 +96,26 @@ struct FriendsView: View {
                         }
                     }
                 }
-            }
-        }.searchable(text: $searchString)
-            .onChange(of: searchString, perform: { newValue in
-                if isFriendView {
-                    if newValue.isEmpty {
-                        filteredFriends = []
-                    } else {
-                        filteredFriends = userRepository.friends.filter { $0.name.lowercased().contains(searchString.lowercased())
+            }.searchable(text: $searchString)
+                .onChange(of: searchString, perform: { newValue in
+                    if isFriendView {
+                        if newValue.isEmpty {
+                            filteredFriends = []
+                        } else {
+                            filteredFriends = userRepository.friends.filter { $0.name.lowercased().contains(searchString.lowercased())
+                            }
                         }
+                    } else {
+                        userRepository.search(searchString)
                     }
-                } else {
-                    userRepository.search(searchString)
+                }).onAppear {
+                    userRepository.addFriendListener(userId: authModel.user!.uid)
+                    userRepository.addFriendRequestListener(userId: authModel.user!.uid)
+                }.onDisappear {
+                    userRepository.removeFriendsListener()
+                    userRepository.removeFriendRequestListener()
                 }
-            })
+        }
     }
 }
 
