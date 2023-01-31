@@ -15,9 +15,13 @@ final class QuestionRepository: ObservableObject {
     var questions: [Question] {
         [userQuestions + askedQuestions].flatMap { $0 }
     }
+    var newQuestions: [Question] {
+        askedQuestions.filter { userId != nil && $0.answers.contains { $0.id == userId } }
+    }
     private let collection = Firestore.firestore().collection("question")
     private var userQuestionListener: ListenerRegistration?
     private var askedQuestionListener: ListenerRegistration?
+    private var userId: String?
     
     func addQuestionsListener(userId: String) {
         self.userQuestionListener = collection.whereField("createdBy", isEqualTo: userId)
@@ -61,5 +65,14 @@ final class QuestionRepository: ObservableObject {
                 fatalError("Unable to add question: \(error.localizedDescription).")
             }
         })
+    }
+    
+    func answerQuestion(question: Question, answer: Answer) {
+        do {
+            _ = try self.collection.document(String(question.id.uuidString))
+                .updateData(["answers": FieldValue.arrayUnion([Firestore.Encoder().encode(answer)])])
+        } catch {
+            fatalError("Unable to add question: \(error.localizedDescription).")
+        }
     }
 }

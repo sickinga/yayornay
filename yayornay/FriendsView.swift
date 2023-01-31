@@ -65,7 +65,6 @@ struct FriendsView: View {
                             }
                         }
                     }.onAppear {
-                        print("TEST")
                         userRepository.addFriendRequestListener(userId: authModel.user!.uid)
                     }.onDisappear {
                         userRepository

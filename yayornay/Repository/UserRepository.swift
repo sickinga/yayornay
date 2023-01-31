@@ -20,8 +20,10 @@ final class UserRepository: ObservableObject {
     private var friendRequestListener: ListenerRegistration?
     
     func add(_ user: NamedUser) {
+        print(user)
         do {
             _ = try userCollection.document(user.id).setData(from: user)
+            userCollection.document(user.id).updateData(["keywordsForLookup": user.keywordsForLookup])
         } catch {
             fatalError("Unable to add user: \(error.localizedDescription).")
         }

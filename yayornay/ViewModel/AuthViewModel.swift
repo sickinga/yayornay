@@ -46,7 +46,9 @@ final class AuthViewModel: ObservableObject {
                 return
             }
             
-            self.userRepository.add(NamedUser(id: result?.user.uid ?? "", name: name))
+            let user = NamedUser(id: result?.user.uid ?? "", name: name)
+            
+            self.userRepository.add(user)
             
             let changeRequest = result?.user.createProfileChangeRequest()
             changeRequest?.displayName = name
