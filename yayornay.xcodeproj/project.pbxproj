@@ -18,6 +18,7 @@
 		E47F6DD92986B77B004EA25E /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = E47F6DD82986B77B004EA25E /* FirebaseAuth */; };
 		E47F6DDB2986B77B004EA25E /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = E47F6DDA2986B77B004EA25E /* FirebaseFirestore */; };
 		E47F6DDD2986B77B004EA25E /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E47F6DDC2986B77B004EA25E /* FirebaseFirestoreSwift */; };
+		E4A863FB298977E8008DA548 /* AccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A863FA298977E8008DA548 /* AccountView.swift */; };
 		E4C55E5F2986C096002DD3F3 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C55E5E2986C096002DD3F3 /* LoginView.swift */; };
 		E4C55E612986C3FA002DD3F3 /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C55E602986C3FA002DD3F3 /* AuthViewModel.swift */; };
 		E4C55E632986C4BE002DD3F3 /* CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C55E622986C4BE002DD3F3 /* CoreData.swift */; };
@@ -39,6 +40,7 @@
 		E47F6DC92986B0E0004EA25E /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
 		E47F6DCC2986B0E0004EA25E /* yayornay.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = yayornay.xcdatamodel; sourceTree = "<group>"; };
 		E47F6DD32986B1E9004EA25E /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		E4A863FA298977E8008DA548 /* AccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountView.swift; sourceTree = "<group>"; };
 		E4C55E5E2986C096002DD3F3 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		E4C55E602986C3FA002DD3F3 /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
 		E4C55E622986C4BE002DD3F3 /* CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreData.swift; sourceTree = "<group>"; };
@@ -89,6 +91,7 @@
 				E4C55E752987E7C1002DD3F3 /* Repository */,
 				E4C55E742987E7AC002DD3F3 /* Model */,
 				E47F6DC02986B0DF004EA25E /* yayornayApp.swift */,
+				E4A863FA298977E8008DA548 /* AccountView.swift */,
 				E47F6DC22986B0DF004EA25E /* ContentView.swift */,
 				E4C55E5E2986C096002DD3F3 /* LoginView.swift */,
 				E4C55E642986C523002DD3F3 /* MainView.swift */,
@@ -227,6 +230,7 @@
 				E4C55E6B298799AB002DD3F3 /* QuestionRepository.swift in Sources */,
 				E4C55E632986C4BE002DD3F3 /* CoreData.swift in Sources */,
 				E4C55E5F2986C096002DD3F3 /* LoginView.swift in Sources */,
+				E4A863FB298977E8008DA548 /* AccountView.swift in Sources */,
 				E4C55E672986D0BF002DD3F3 /* UserRepository.swift in Sources */,
 				E4C55E6D298799C2002DD3F3 /* Question.swift in Sources */,
 				E4C55E692986D145002DD3F3 /* User.swift in Sources */,

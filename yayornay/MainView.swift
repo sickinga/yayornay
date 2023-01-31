@@ -10,48 +10,15 @@ import FirebaseAuth
 
 struct MainView: View {
     @EnvironmentObject private var authModel: AuthViewModel
-    @StateObject var questionRepository: QuestionRepository = QuestionRepository()
+    @ObservedObject var questionRepository: QuestionRepository = QuestionRepository()
     @State var questionText: String = ""
     @State var selectedQuestion: Question?
     @State var showAnswerView = false
     
     var body: some View {
         VStack {
-            Text("\(authModel.user?.email ?? "")")
-            Text("\(authModel.user?.displayName ?? "")")
-            
-            List {
-                ForEach(questionRepository.questions) { question in
-                    Button(action: {
-                        self.selectedQuestion = question
-                        self.showAnswerView = true
-                    }, label: {
-                        Label {
-                            Text(question.text)
-                            Spacer()
-                        } icon: {
-                            if isNewQuestion(question) {
-                                Circle()
-                                    .fill(.blue)
-                                    .frame(width: 12, height: 12)
-                            }
-                        }
-                    })
-                }
-            }
-            .onAppear{
-                questionRepository.addQuestionsListener(userId: authModel.user!.uid)
-            }
-            .onDisappear{questionRepository.removeQuestionsListener()}
-            .sheet(
-                isPresented: $showAnswerView,
-                content: {
-                    AnswerView(
-                        isPresented: $showAnswerView,
-                        user: authModel.user!,
-                        question: selectedQuestion
-                    )
-                })
+            Text("Yay or Nay")
+                .font(.largeTitle)
             
             TextField("Ask something", text: $questionText)
                 .disableAutocorrection(true)
@@ -62,23 +29,58 @@ struct MainView: View {
                 questionRepository.add(question)
                 questionText = ""
             }
-        }.toolbar {
-            ToolbarItemGroup(placement: .navigationBarLeading) {
-                Button(
-                    action: {
-                        authModel.signOut()
-                    },
-                    label: {
-                        Text("Sign Out")
-                            .bold()
+            
+            if !questionRepository.questions.isEmpty {
+                Text("History")
+                    .font(.title2)
+                    .padding()
+                
+                List {
+                    ForEach(questionRepository.questions) { question in
+                        Button(action: {
+                            self.selectedQuestion = question
+                            self.showAnswerView = true
+                        }, label: {
+                            Label {
+                                Text(question.text)
+                                Spacer()
+                            } icon: {
+                                if isNewQuestion(question) {
+                                    Circle()
+                                        .fill(.blue)
+                                        .frame(width: 12, height: 12)
+                                }
+                            }
+                        })
                     }
-                )
+                }.sheet(
+                    isPresented: $showAnswerView,
+                    content: {
+                        AnswerView(
+                            isPresented: $showAnswerView,
+                            user: authModel.user!,
+                            question: selectedQuestion
+                        )
+                    })
             }
+        }.toolbar {
             ToolbarItemGroup(placement: .primaryAction) {
-                NavigationLink(destination: FriendsView().environmentObject(authModel)) {
-                    Label("", systemImage: "person.circle.fill")
+                NavigationLink(destination: AccountView().environmentObject(authModel)) {
+                    Label("", systemImage: "person.fill")
                 }
             }
+            ToolbarItemGroup(placement: .navigationBarLeading) {
+                NavigationLink(destination: FriendsView().environmentObject(authModel)) {
+                    Label("", systemImage: "person.2.fill")
+                }
+            }
+        }.onAppear {
+            questionRepository.addQuestionsListener(userId: authModel.user!.uid)
+        }.onDisappear {
+            questionRepository.removeQuestionsListener()
+        }.refreshable {
+            questionRepository.removeQuestionsListener()
+            questionRepository.addQuestionsListener(userId: authModel.user!.uid)
         }
     }
     

@@ -10,13 +10,10 @@ import FirebaseFirestore
 import FirebaseFirestoreSwift
 
 final class QuestionRepository: ObservableObject {
-    private var userQuestions: [Question] = []
-    private var askedQuestions: [Question] = []
+    @Published var userQuestions: [Question] = []
+    @Published var askedQuestions: [Question] = []
     var questions: [Question] {
         [userQuestions + askedQuestions].flatMap { $0 }
-    }
-    var newQuestions: [Question] {
-        askedQuestions.filter { userId != nil && $0.answers.contains { $0.id == userId } }
     }
     private let collection = Firestore.firestore().collection("question")
     private var userQuestionListener: ListenerRegistration?
