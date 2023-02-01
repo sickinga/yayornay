@@ -32,7 +32,7 @@ final class UserRepository: ObservableObject {
     }
     
     func search(_ searchString: String) {
-        userCollection.whereField("keywordsForLookup", arrayContains: searchString)
+        userCollection.whereField("keywordsForLookup", arrayContains: searchString.lowercased())
             .getDocuments { querySnapshot, error in
                 guard let documents = querySnapshot?.documents, error == nil else {
                     print("No documents")

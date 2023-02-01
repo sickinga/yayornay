@@ -16,10 +16,9 @@ struct MainView: View {
     @ObservedObject var vm = MainViewModel()
     @State var showAnswerView = false
     
-    
     var body: some View {
         NavigationView {
-            VStack {
+            ScrollView {
                 Image("yay-or-nay")
                     .resizable()
                     .frame(width: 280, height: 280)
@@ -45,8 +44,8 @@ struct MainView: View {
                         .font(.title2)
                         .padding()
                     
-                    List {
-                        ForEach(questionRepository.questions) { question in
+                    ForEach(questionRepository.questions) { question in
+                        VStack {
                             Button(action: {
                                 vm.selectedQuestion = question
                                 self.showAnswerView = true
@@ -54,6 +53,7 @@ struct MainView: View {
                                 HStack {
                                     VStack(alignment: .leading) {
                                         Text(question.text)
+                                            .foregroundColor(Color(UIColor.label))
                                         Text("from \(question.createdByName)")
                                             .font(.footnote)
                                             .foregroundColor(.gray)
@@ -76,19 +76,10 @@ struct MainView: View {
                                     }.foregroundColor(.gray)
                                 }
                             }).padding(.vertical, 3)
+                                .padding(.horizontal, 25)
+                            Divider()
                         }
-                    }.sheet(
-                        isPresented: $showAnswerView,
-                        content: {
-                            AnswerView(
-                                questionRepository: questionRepository,
-                                isPresented: $showAnswerView,
-                                user: authModel.user!,
-                                question: vm.selectedQuestion
-                            )
-                            .presentationDetents([.medium, .large])
-                        })
-                    .listStyle(.inset)
+                    }
                 }
             }.toolbar {
                 ToolbarItemGroup(placement: .navigationBarLeading) {
@@ -103,14 +94,24 @@ struct MainView: View {
                             .tint(Color(UIColor.label))
                     }
                 }
-            }.onAppear {
+            }.sheet(
+                isPresented: $showAnswerView,
+                content: {
+                    AnswerView(
+                        questionRepository: questionRepository,
+                        isPresented: $showAnswerView,
+                        user: authModel.user!,
+                        question: vm.selectedQuestion
+                    )
+                    .presentationDetents([.medium, .large])
+            }).onAppear {
                 questionRepository.addQuestionsListener()
             }.onDisappear {
                 questionRepository.removeQuestionsListener()
             }.refreshable {
                 questionRepository.removeQuestionsListener()
                 questionRepository.addQuestionsListener()
-            }
+            }.scrollDismissesKeyboard(.immediately)
         }
     }
     
