@@ -20,8 +20,9 @@ struct MainView: View {
     var body: some View {
         NavigationView {
             VStack {
-                Text("Yay or Nay")
-                    .font(.largeTitle)
+                Image("yay-or-nay")
+                    .resizable()
+                    .frame(width: 280, height: 280)
                 
                 TextField("Ask something", text: $questionText, axis: .vertical)
                     .disableAutocorrection(true)
