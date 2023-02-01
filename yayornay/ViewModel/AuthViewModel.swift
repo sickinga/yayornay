@@ -22,6 +22,8 @@ final class AuthViewModel: ObservableObject {
                 return
             }
             self.user = user
+            UserDefaults.standard.set(user?.uid ?? "", forKey: "uid")
+            UserDefaults.standard.set(user?.displayName ?? "", forKey: "name")
         }
     }
     

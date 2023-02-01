@@ -19,7 +19,6 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
 @main
 struct yayornayApp: App {
-    let persistenceController = PersistenceController.shared
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     
     var body: some Scene {

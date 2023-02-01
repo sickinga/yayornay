@@ -16,15 +16,11 @@ struct AccountView: View {
                 .resizable()
                 .frame(width: 128, height: 128)
                 .padding(.top, 25)
-                .foregroundColor(.blue)
-            Text(authModel.user?.displayName ?? "")
+                .foregroundColor(.yay)
+            Text(CurrentUser.name)
                 .font(.title)
                 .padding()
             List {
-                Button(action: {print("log out") }) {
-                    Text("Change name")
-                        .font(.callout)
-                }
                 Button(action: { authModel.signOut() }) {
                     Text("Sign out")
                         .font(.callout)

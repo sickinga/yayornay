@@ -50,7 +50,7 @@ struct LoginView: View {
                     Text(isLogin ? "Log In" : "Create Account")
                     .foregroundColor(.white)
                 }).frame(width: 280, height: 45, alignment: .center)
-                    .background(Color.blue)
+                    .background(Color.yay)
                     .cornerRadius(8)
                 Spacer()
             }.navigationTitle(isLogin ? "Welcome Back" : "Welcome")

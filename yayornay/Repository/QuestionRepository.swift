@@ -17,12 +17,9 @@ class QuestionRepository: ObservableObject {
     private var askedQuestionListener: ListenerRegistration?
     private var userId: String?
     @Published var questions: [Question] = []
-//    {
-//        [questionRepository.userQuestions + questionRepository.askedQuestions].flatMap { $0 }
-//    }
     
-    func addQuestionsListener(userId: String) {
-        self.userQuestionListener = collection.whereField("createdBy", isEqualTo: userId)
+    func addQuestionsListener() {
+        self.userQuestionListener = collection.whereField("createdBy", isEqualTo: CurrentUser.uid)
             .addSnapshotListener { (querySnapshot, error) in
                 if let error = error {
                     print("Error getting documents: \(error)")
@@ -30,10 +27,12 @@ class QuestionRepository: ObservableObject {
                     self.userQuestions = querySnapshot?.documents.compactMap { document in
                         return try? document.data(as: Question.self)
                     } ?? []
-                    self.questions = [self.userQuestions + self.askedQuestions].flatMap { $0 }
+                    self.questions = [self.userQuestions + self.askedQuestions].flatMap { $0 }.sorted {
+                        $0.created > $1.created
+                    }
                 }
             }
-        self.askedQuestionListener = collection.whereField("sentTo", arrayContains: userId)
+        self.askedQuestionListener = collection.whereField("sentTo", arrayContains: CurrentUser.uid)
             .addSnapshotListener { (querySnapshot, error) in
                 if let error = error {
                     print("Error getting documents: \(error)")
@@ -41,7 +40,9 @@ class QuestionRepository: ObservableObject {
                     self.askedQuestions = querySnapshot?.documents.compactMap { document in
                         return try? document.data(as: Question.self)
                     } ?? []
-                    self.questions = [self.userQuestions + self.askedQuestions].flatMap { $0 }
+                    self.questions = [self.userQuestions + self.askedQuestions].flatMap { $0 }.sorted {
+                        $0.created > $1.created
+                    }
                 }
             }
     }
@@ -68,9 +69,11 @@ class QuestionRepository: ObservableObject {
     }
     
     func answerQuestion(question: Question, answer: Answer) {
+        var question: Question = question
+        question.answers[CurrentUser.uid] = answer
         do {
             _ = try self.collection.document(String(question.id.uuidString))
-                .updateData(["answers": FieldValue.arrayUnion([Firestore.Encoder().encode(answer)])])
+                .setData(from: question, merge: true)
         } catch {
             fatalError("Unable to add question: \(error.localizedDescription).")
         }

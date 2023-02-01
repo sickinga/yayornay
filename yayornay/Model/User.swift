@@ -35,3 +35,13 @@ extension String {
         return sequences
     }
 }
+
+struct CurrentUser {
+    static var uid: String {
+        UserDefaults.standard.string(forKey: "uid")!
+    }
+    
+    static var name: String {
+        UserDefaults.standard.string(forKey: "name")!
+    }
+}

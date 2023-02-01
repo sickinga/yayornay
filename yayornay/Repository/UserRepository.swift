@@ -12,12 +12,14 @@ import FirebaseFirestoreSwift
 final class UserRepository: ObservableObject {
     @Published var friends: [NamedUser] = []
     @Published var friendRequests: [FriendRequest] = []
+    @Published var myFriendRequests: [FriendRequest] = []
     @Published var filteredUsers: [NamedUser] = []
     private let userCollection = Firestore.firestore().collection("user")
     private let friendRequestCollection = Firestore.firestore().collection("friendRequest")
     private let friendsPath = "friends"
     private var friendListener: ListenerRegistration?
-    private var friendRequestListener: ListenerRegistration?
+    private var friendRequestToListener: ListenerRegistration?
+    private var myFriendRequestListener: ListenerRegistration?
     
     func add(_ user: NamedUser) {
         print(user)
@@ -39,10 +41,12 @@ final class UserRepository: ObservableObject {
                 self.filteredUsers = documents.compactMap { queryDocumentSnapshot in
                     try? queryDocumentSnapshot.data(as: NamedUser.self)
                 }.filter { user in
-                    self.friends.contains { friend in
+                    !self.friends.contains { friend in
                         friend.id == user.id
+                    } &&
+                    !self.friendRequests.contains { request in
+                        request.from == user.id
                     }
-                    
                 }
             }
     }
@@ -55,8 +59,13 @@ final class UserRepository: ObservableObject {
         }
     }
     
-    func addFriendListener(userId: String) {
-        self.friendListener = userCollection.document(userId).collection(friendsPath)
+    func removeFriend(_ friend: NamedUser) {
+        userCollection.document(CurrentUser.uid).collection(friendsPath).document(friend.id).delete()
+        userCollection.document(friend.id).collection(friendsPath).document(CurrentUser.uid).delete()
+    }
+    
+    func addFriendListener(completion: @escaping ([NamedUser]) -> Void) {
+        self.friendListener = userCollection.document(CurrentUser.uid).collection(friendsPath)
             .addSnapshotListener { (querySnapshot, error) in
                 if let error = error {
                     print("Error getting documents: \(error)")
@@ -64,6 +73,7 @@ final class UserRepository: ObservableObject {
                     self.friends = querySnapshot?.documents.compactMap { document in
                         try? document.data(as: NamedUser.self)
                     } ?? []
+                    completion(self.friends)
                 }
             }
     }
@@ -93,8 +103,8 @@ final class UserRepository: ObservableObject {
         }
     }
     
-    func addFriendRequestListener(userId: String) {
-        self.friendRequestListener = friendRequestCollection.whereField("to", isEqualTo: userId)
+    func addFriendRequestListener() {
+        self.friendRequestToListener = friendRequestCollection.whereField("to", isEqualTo: CurrentUser.uid)
             .addSnapshotListener { (querySnapshot, error) in
                 if let error = error {
                     print("Error getting documents: \(error)")
@@ -104,9 +114,20 @@ final class UserRepository: ObservableObject {
                     } ?? []
                 }
             }
+        self.myFriendRequestListener = friendRequestCollection.whereField("from", isEqualTo: CurrentUser.uid)
+            .addSnapshotListener { (querySnapshot, error) in
+                if let error = error {
+                    print("Error getting documents: \(error)")
+                } else {
+                    self.myFriendRequests = querySnapshot?.documents.compactMap { document in
+                        try? document.data(as: FriendRequest.self)
+                    } ?? []
+                }
+            }
     }
     
     func removeFriendRequestListener() {
-        self.friendRequestListener?.remove()
+        self.friendRequestToListener?.remove()
+        self.myFriendRequestListener?.remove()
     }
 }
