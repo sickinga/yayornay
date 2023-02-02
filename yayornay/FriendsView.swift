@@ -85,7 +85,7 @@ struct FriendsView: View {
                                     Button {
                                         vm.userRepository.sendFriendRequest(FriendRequest(from: NamedUser(user: authModel.user!), to: user))
                                     } label: {
-                                        Label("ADD", systemImage: "checkmark.circle.fill")
+                                        Label("ADD", systemImage: "plus.circle.fill")
                                     }.tint(Color.yay)
                                 }
                             }
