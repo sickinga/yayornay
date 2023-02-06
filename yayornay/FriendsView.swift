@@ -13,13 +13,13 @@ struct FriendsView: View {
     
     var body: some View {
         List {
-            if !vm.friends.isEmpty && (!vm.searchString.isEmpty || vm.isFriendView) {
+            if vm.showFriendList {
                 Section("My Friends (\(vm.friends.count))") {
                     ForEach(vm.friends) { friend in
                         HStack {
                             Text(friend.name)
                             Spacer()
-                            Button(action: { vm.userRepository.removeFriend(friend) }, label: {
+                            Button(action: { vm.removeFriend(friend) }, label: {
                                 Image(systemName: "xmark")
                             })
                             .tint(.gray)
@@ -28,33 +28,33 @@ struct FriendsView: View {
                     }
                 }
             }
-            if vm.friends.isEmpty && vm.searchString.isEmpty && vm.isFriendView {
+            if vm.showNoFriendsHint {
                 HStack {
                     Spacer()
                     Text("Find your friends first...")
                     Spacer()
                 }
             }
-            if !vm.friendRequests.isEmpty && (!vm.searchString.isEmpty || !vm.isFriendView) {
+            if vm.showFriendRequestList {
                 Section("Friend Requests") {
                     ForEach(vm.friendRequests) { request in
                         HStack {
                             Text(request.fromName)
                             Spacer()
                             Button("ADD") {
-                                vm.userRepository.answerFriendRequest(friendRequest: request, accept: true)
+                                vm.answerFriendRequest(friendRequest: request, accept: true)
                             }
                             Button("DENY") {
-                                vm.userRepository.answerFriendRequest(friendRequest: request, accept: false)
+                                vm.answerFriendRequest(friendRequest: request, accept: false)
                             }
                         }.swipeActions {
                             Button {
-                                vm.userRepository.answerFriendRequest(friendRequest: request, accept: true)
+                                vm.answerFriendRequest(friendRequest: request, accept: true)
                             } label: {
                                 Label("ADD", systemImage: "checkmark.circle.fill")
                             }.tint(Color.green)
                             Button {
-                                vm.userRepository.answerFriendRequest(friendRequest: request, accept: false)
+                                vm.answerFriendRequest(friendRequest: request, accept: false)
                             } label: {
                                 Label("DENY", systemImage: "minus.circle.fill")
                             }
@@ -63,27 +63,27 @@ struct FriendsView: View {
                     }
                 }
             }
-            if vm.userRepository.friendRequests.isEmpty && vm.searchString.isEmpty && !vm.isFriendView {
+            if vm.showNoFriendRequestsHint {
                 HStack {
                     Spacer()
                     Text("No pending requests")
                     Spacer()
                 }
             }
-            if !vm.searchString.isEmpty && !vm.userRepository.filteredUsers.isEmpty {
+            if vm.showMoreResultsList {
                 Section("More Results") {
-                    ForEach(vm.userRepository.filteredUsers) { user in
+                    ForEach(vm.filteredUsers) { user in
                         HStack {
                             Text(user.name)
                             Spacer()
-                            if vm.userRepository.myFriendRequests.contains { $0.to == user.id } {
+                            if vm.myFriendRequests.contains { $0.to == user.id } {
                                 Text("ADDED")
                             } else {
                                 Button("ADD") {
-                                    vm.userRepository.sendFriendRequest(FriendRequest(from: NamedUser(user: authModel.user!), to: user))
+                                    vm.sendFriendRequest(fromUser: authModel.user!, toNamedUser: user)
                                 }.swipeActions {
                                     Button {
-                                        vm.userRepository.sendFriendRequest(FriendRequest(from: NamedUser(user: authModel.user!), to: user))
+                                        vm.sendFriendRequest(fromUser: authModel.user!, toNamedUser: user)
                                     } label: {
                                         Label("ADD", systemImage: "plus.circle.fill")
                                     }.tint(Color.yay)
@@ -96,14 +96,8 @@ struct FriendsView: View {
         }.searchable(text: $vm.searchString, placement: .navigationBarDrawer(displayMode: .always))
             .onChange(of: vm.searchString, perform: { newValue in
                 if vm.isFriendView {
-                    if newValue.isEmpty {
-                        vm.filteredFriends = []
-                    } else {
-                        vm.filteredFriends = vm.userRepository.friends.filter { $0.name.lowercased().contains(vm.searchString.lowercased())
-                        }
-                    }
+                    vm.searchFriends(newValue)
                 }
-                vm.userRepository.search(vm.searchString)
             }).onAppear {
                 vm.initiate()
             }.onDisappear {

@@ -20,6 +20,7 @@ final class UserRepository: ObservableObject {
     private var friendListener: ListenerRegistration?
     private var friendRequestToListener: ListenerRegistration?
     private var myFriendRequestListener: ListenerRegistration?
+    private var allUsers: [NamedUser] = []
     
     func add(_ user: NamedUser) {
         print(user)
@@ -38,17 +39,22 @@ final class UserRepository: ObservableObject {
                     print("No documents")
                     return
                 }
-                self.filteredUsers = documents.compactMap { queryDocumentSnapshot in
+                self.allUsers = documents.compactMap { queryDocumentSnapshot in
                     try? queryDocumentSnapshot.data(as: NamedUser.self)
-                }.filter { user in
-                    !self.friends.contains { friend in
-                        friend.id == user.id
-                    } &&
-                    !self.friendRequests.contains { request in
-                        request.from == user.id
-                    }
                 }
+                self.filterUsers()
             }
+    }
+    
+    func filterUsers() {
+        self.filteredUsers = self.allUsers.filter { user in
+            !self.friends.contains { friend in
+                friend.id == user.id
+            } &&
+            !self.friendRequests.contains { request in
+                request.from == user.id
+            }
+        }
     }
     
     func addFriend(userId: String, friend: NamedUser) {
@@ -112,6 +118,7 @@ final class UserRepository: ObservableObject {
                     self.friendRequests = querySnapshot?.documents.compactMap { document in
                         try? document.data(as: FriendRequest.self)
                     } ?? []
+                    self.filterUsers()
                 }
             }
         self.myFriendRequestListener = friendRequestCollection.whereField("from", isEqualTo: CurrentUser.uid)

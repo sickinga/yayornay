@@ -10,46 +10,42 @@ import FirebaseFirestore
 import FirebaseFirestoreSwift
 
 class QuestionRepository: ObservableObject {
-    @Published var userQuestions: [Question] = []
-    @Published var askedQuestions: [Question] = []
     private let collection = Firestore.firestore().collection("question")
-    private var userQuestionListener: ListenerRegistration?
-    private var askedQuestionListener: ListenerRegistration?
+    private var myQuestionListener: ListenerRegistration?
+    private var friendsQuestionListener: ListenerRegistration?
     private var userId: String?
-    @Published var questions: [Question] = []
     
-    func addQuestionsListener() {
-        self.userQuestionListener = collection.whereField("createdBy", isEqualTo: CurrentUser.uid)
+    func addQuestionsListener(
+        myQuestionCompletion: @escaping ([Question]) -> Void,
+        friendsQuestionCompletion: @escaping ([Question]) -> Void
+    ) {
+        self.myQuestionListener = collection.whereField("createdBy", isEqualTo: CurrentUser.uid)
             .addSnapshotListener { (querySnapshot, error) in
                 if let error = error {
                     print("Error getting documents: \(error)")
                 } else {
-                    self.userQuestions = querySnapshot?.documents.compactMap { document in
+                    let myQuestions = querySnapshot?.documents.compactMap { document in
                         return try? document.data(as: Question.self)
                     } ?? []
-                    self.questions = [self.userQuestions + self.askedQuestions].flatMap { $0 }.sorted {
-                        $0.created > $1.created
-                    }
+                    myQuestionCompletion(myQuestions)
                 }
             }
-        self.askedQuestionListener = collection.whereField("sentTo", arrayContains: CurrentUser.uid)
+        self.friendsQuestionListener = collection.whereField("sentTo", arrayContains: CurrentUser.uid)
             .addSnapshotListener { (querySnapshot, error) in
                 if let error = error {
                     print("Error getting documents: \(error)")
                 } else {
-                    self.askedQuestions = querySnapshot?.documents.compactMap { document in
+                    let friendsQuestions = querySnapshot?.documents.compactMap { document in
                         return try? document.data(as: Question.self)
                     } ?? []
-                    self.questions = [self.userQuestions + self.askedQuestions].flatMap { $0 }.sorted {
-                        $0.created > $1.created
-                    }
+                    friendsQuestionCompletion(friendsQuestions)
                 }
             }
     }
     
     func removeQuestionsListener() {
-        self.userQuestionListener?.remove()
-        self.askedQuestionListener?.remove()
+        self.myQuestionListener?.remove()
+        self.friendsQuestionListener?.remove()
     }
     
     func add(_ question: Question) {

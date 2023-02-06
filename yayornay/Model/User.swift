@@ -30,7 +30,7 @@ extension String {
     func generateStringSequence() -> [String] {
         var sequences: [String] = []
         for i in 1...self.count {
-            sequences.append(String(self.prefix(i).lowercased()))
+            sequences.append(String(self.prefix(i)).lowercased())
         }
         return sequences
     }

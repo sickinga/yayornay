@@ -11,10 +11,7 @@ import Charts
 
 struct MainView: View {
     @EnvironmentObject private var authModel: AuthViewModel
-    @ObservedObject var questionRepository: QuestionRepository = QuestionRepository()
-    @State var questionText: String = ""
     @ObservedObject var vm = MainViewModel()
-    @State var showAnswerView = false
     
     var body: some View {
         NavigationView {
@@ -23,32 +20,29 @@ struct MainView: View {
                     .resizable()
                     .frame(width: 280, height: 280)
                 
-                TextField("Ask something", text: $questionText, axis: .vertical)
+                TextField("Ask something", text: $vm.questionText, axis: .vertical)
                     .disableAutocorrection(true)
                     .textFieldStyle(.roundedBorder)
                     .padding(.horizontal, 25)
                     .padding(.vertical)
                     .lineLimit(3, reservesSpace: true)
                 Button(action: {
-                    let question = Question(id: UUID(), created: Date.now, text: questionText, createdBy: CurrentUser.uid, createdByName: CurrentUser.name, answers: [:], sentTo: [])
-                    questionRepository.add(question)
-                    questionText = ""
+                    vm.sendQuestion()
                 }, label: {
                     Label("Send!", systemImage: "paperplane.fill")
                 }).buttonStyle(.borderedProminent)
                     .tint(.yay)
-                    .disabled(questionText.isEmpty)
+                    .disabled(vm.questionText.isEmpty)
                 
-                if !questionRepository.questions.isEmpty {
+                if !vm.questions.isEmpty {
                     Text("History")
                         .font(.title2)
                         .padding()
                     
-                    ForEach(questionRepository.questions) { question in
+                    ForEach(vm.questions) { question in
                         VStack {
                             Button(action: {
-                                vm.selectedQuestion = question
-                                self.showAnswerView = true
+                                vm.selectQuestion(question)
                             }, label: {
                                 HStack {
                                     VStack(alignment: .leading) {
@@ -60,7 +54,7 @@ struct MainView: View {
                                     }
                                     Spacer()
                                     VStack(alignment: .trailing) {
-                                        if isNewQuestion(question) {
+                                        if vm.isNewQuestion(question) {
                                             Circle()
                                                 .fill(.blue)
                                                 .frame(width: 12, height: 12)
@@ -95,28 +89,21 @@ struct MainView: View {
                     }
                 }
             }.sheet(
-                isPresented: $showAnswerView,
+                isPresented: $vm.showAnswerView,
                 content: {
                     AnswerView(
-                        questionRepository: questionRepository,
-                        isPresented: $showAnswerView,
-                        user: authModel.user!,
+                        answerQuestion: vm.answerQuestion,
                         question: vm.selectedQuestion
                     )
                     .presentationDetents([.medium, .large])
             }).onAppear {
-                questionRepository.addQuestionsListener()
+                vm.initiate()
             }.onDisappear {
-                questionRepository.removeQuestionsListener()
+                vm.terminate()
             }.refreshable {
-                questionRepository.removeQuestionsListener()
-                questionRepository.addQuestionsListener()
+                vm.refresh()
             }.scrollDismissesKeyboard(.immediately)
         }
-    }
-    
-    func isNewQuestion(_ question: Question) -> Bool {
-        return question.createdBy != CurrentUser.uid && !question.answers.contains(where: { $0.value.id == CurrentUser.uid })
     }
 }
 
@@ -128,9 +115,7 @@ struct MainView_Previews: PreviewProvider {
 }
 
 struct AnswerView: View {
-    var questionRepository: QuestionRepository
-    @Binding var isPresented: Bool
-    let user: User
+    let answerQuestion: (Bool) -> Void
     let question: Question?
     var evaluationData: [Evaluation] {[
         Evaluation(type: "Yay", value: question?.yayPercentage ?? 0, color: .yay),
@@ -175,14 +160,6 @@ struct AnswerView: View {
                 }
             }
         }
-    }
-    
-    func answerQuestion(_ answer: Bool) {
-        questionRepository
-            .answerQuestion(
-                question: question!,
-                answer: Answer(id: user.uid, name: user.displayName ?? "", answer: true))
-        isPresented.toggle()
     }
 }
 
